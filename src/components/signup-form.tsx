@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,6 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
+/* ------------------ Validation Schema ------------------ */
 const formSchema = z.object({
   email: z
     .string()
@@ -34,8 +36,11 @@ const formSchema = z.object({
     }),
 });
 
-const WEBHOOK_URL = "https://rantwilson.app.n8n.cloud/webhook/8846998e-65c6-408d-a873-f4199ffc04b2";
+/* ------------------ n8n Webhook URL ------------------ */
+const WEBHOOK_URL =
+  "https://rantwilson.app.n8n.cloud/webhook/8846998e-65c6-408d-a873-f4199ffc04b2";
 
+/* ------------------ Component ------------------ */
 export function SignUpForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -48,25 +53,23 @@ export function SignUpForm() {
     },
   });
 
+  /* ------------------ SUBMIT HANDLER ------------------ */
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
 
-    // Simulate network request
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     try {
-      // In a real application, you would make the fetch request here.
-      // Example:
-      // const response = await fetch(WEBHOOK_URL, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
-      // if (!response.ok) throw new Error('Network response was not ok.');
-      
-      console.log("Form submitted successfully with values:", values);
-      console.log(`In a real app, this data would be sent to: ${WEBHOOK_URL}`);
-      
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Webhook request failed");
+      }
+
       setIsSuccess(true);
     } catch (error) {
       console.error("Submission error:", error);
@@ -79,7 +82,8 @@ export function SignUpForm() {
       setIsSubmitting(false);
     }
   }
-  
+
+  /* ------------------ SUCCESS STATE ------------------ */
   if (isSuccess) {
     return (
       <Card className="w-full max-w-md animate-in fade-in-50">
@@ -94,14 +98,18 @@ export function SignUpForm() {
     );
   }
 
+  /* ------------------ FORM UI ------------------ */
   return (
     <Card className="w-full max-w-md shadow-lg animate-in fade-in-50">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold text-center">Join Us</CardTitle>
+        <CardTitle className="text-3xl font-bold text-center">
+          Join Us
+        </CardTitle>
         <CardDescription className="text-center text-muted-foreground pt-1">
           Sign up with your Gmail account to get notified.
         </CardDescription>
       </CardHeader>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
@@ -115,7 +123,6 @@ export function SignUpForm() {
                     <Input
                       placeholder="your.name@gmail.com"
                       {...field}
-                      className="transition-colors duration-300"
                     />
                   </FormControl>
                   <FormMessage />
@@ -123,8 +130,13 @@ export function SignUpForm() {
               )}
             />
           </CardContent>
+
           <CardFooter>
-            <Button type="submit" className="w-full transition-all duration-300" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
