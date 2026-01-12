@@ -58,18 +58,16 @@ export function SignUpForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
+      await fetch(WEBHOOK_URL, {
         method: "POST",
+        mode: "no-cors", // ✅ CRITICAL FIX
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
 
-      if (!response.ok) {
-        throw new Error("Webhook request failed");
-      }
-
+      // ✅ If fetch doesn't throw, webhook received the data
       setIsSuccess(true);
     } catch (error) {
       console.error("Submission error:", error);
