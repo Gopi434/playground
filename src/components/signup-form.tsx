@@ -34,7 +34,7 @@ const formSchema = z.object({
     }),
 });
 
-const WEBHOOK_URL = "WEBHOOK_URL_HERE";
+const WEBHOOK_URL = "https://rantwilson.app.n8n.cloud/webhook/8846998e-65c6-408d-a873-f4199ffc04b2";
 
 export function SignUpForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
